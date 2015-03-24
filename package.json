@@ -1,0 +1,28 @@
+{
+  "name": "log-parser",
+  "version": "0.1.0",
+  "description": "Log Parser for ExpressJS/Morgan Middleware",
+  "author": "Gregory Langlais",
+  "private": false,
+  "keywords": [
+    "log",
+    "parser",
+    "expressjs",
+    "express",
+    "morgan"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gregl83/log-parser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gregl83/log-parser/issues"
+  },
+  "homepage": "https://github.com/gregl83/log-parser",
+  "scripts": {
+  },
+  "devDependencies": {
+  },
+  "dependencies": {
+  }
+}
