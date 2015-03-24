@@ -24,5 +24,7 @@
   "devDependencies": {
   },
   "dependencies": {
+    "minimist": "1.1.x",
+    "winston": "0.9.x"
   }
 }
