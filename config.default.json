@@ -2,5 +2,12 @@
   "logFileMatch": {
     "filename": ".*\\.log",
     "modifiers": ""
+  },
+  "logMatch": {
+    "combined": "",
+    "common": "",
+    "dev": "",
+    "short": "",
+    "tiny": ""
   }
 }
