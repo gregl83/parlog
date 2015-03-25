@@ -11,6 +11,7 @@
     "express",
     "morgan"
   ],
+  "main": "src/LogParser",
   "repository": {
     "type": "git",
     "url": "https://github.com/gregl83/log-parser.git"
@@ -28,5 +29,6 @@
     "winston": "0.9.x",
     "async": "0.9.x",
     "csv": "0.4.x"
-  }
+  },
+  "license": "MIT"
 }
