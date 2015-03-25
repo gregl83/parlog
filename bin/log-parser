@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
 var url = require('url');
+var querystring = require('querystring');
 
 var argv = require('minimist')(process.argv.slice(2));
 var winston = require('winston');
@@ -82,6 +83,30 @@ fs.readdir(directory, function(err, files) {
   log.debug('parsing', logFiles.length, 'log files');
 
 
+
+  var out = fs.createWriteStream('./log-parser.out.csv');
+
+  // fixme csv parse option
+  var stringifier = csv.stringify({});
+
+  stringifier.on('readable', function() {
+    while(row = stringifier.read()) {
+      out.write(row);
+    }
+  });
+
+  stringifier.on('error', function(err) {
+    log.error('converting to csv', err);
+  });
+
+  stringifier.on('finish', function() {
+    out.close();
+  });
+
+  stringifier.write(Object.keys(formatConfig.params));
+
+
+
   var q = async.queue(function (filename, callback) {
     log.debug('parsing log file', filename);
 
@@ -98,7 +123,7 @@ fs.readdir(directory, function(err, files) {
       // build logLine from line parts
       var lineParts = formatExp.exec(line);
       Object.keys(formatConfig.params).forEach(function(param, i) {
-        switch(param) {
+        switch(formatConfig.params[param]) {
           case 'date':
             var slashSplit = lineParts[(i+1)].split('/');
             var colonSplit = slashSplit[2].split(':');
@@ -107,6 +132,7 @@ fs.readdir(directory, function(err, files) {
             break;
           case 'url':
             logLine[param] = url.parse(lineParts[(i+1)], true);
+            logLine[param].toString = function(){return lineParts[(i+1)]};
             break;
           default:
             logLine[param] = lineParts[(i+1)];
@@ -118,12 +144,17 @@ fs.readdir(directory, function(err, files) {
 
       if (start.getDate() != logLine['date'].getDate() || start.getMonth() != logLine['date'].getMonth() || start.getFullYear() != logLine['date'].getFullYear()) return;
 
-      // todo write logLine match and output
+      logLine['date'] = logLine['date'].toISOString();
+      logLine['url'] = logLine['url'].toString();
+      logLine['referrer'] = logLine['referrer'].toString();
 
 
-      //if (start.getDate() != date.getDate() || start.getMonth() != date.getMonth() || start.getFullYear() != date.getFullYear()) return;
-      //
-      //var method = parsedLine[5].substr(1);
+      var qs = querystring.parse(logLine['url']);
+
+      if ('undefined' === typeof qs.u && 'undefined' === typeof qs.q) {
+        stringifier.write(logLine);
+      }
+
 
       // fixme temp code for specific purpose ------
     });
@@ -138,5 +169,6 @@ fs.readdir(directory, function(err, files) {
     log.info('done parsing log directory', directory, 'file match', logFileMatch);
   };
 
+  // fixme remove fs depend
   q.push(logFiles);
 });
