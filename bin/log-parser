@@ -28,9 +28,9 @@ if (!(start instanceof Date)) {
   throw new Error('invalid start date');
 }
 
-var file = 'access.log';
-if (argv.f) file = argv.f;
-else if (argv.file) file = argv.file;
+var directory = './log';
+if (argv.d) file = argv.d;
+else if (argv.dir) file = argv.dir;
 
 function getQueryParam(param, src) {
   param = param.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
