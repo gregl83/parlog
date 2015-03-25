@@ -1,7 +1,7 @@
 # log-parser
 Log Parser for ExpressJS/Morgan Middleware
 
-The following at the log-parser supported log formats. Documentation copied directly from the [expressjs/morgan](https://github.com/expressjs/morgan) README.
+The following are the log-parser supported formats. Documentation copied directly from the [expressjs/morgan](https://github.com/expressjs/morgan) README.
 
 ## Predefined Formats
 
