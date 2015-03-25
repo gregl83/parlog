@@ -24,10 +24,9 @@ if (argv.d || argv.debug) {
 }
 
 // get start date to query log records
-var start;
+var start = new Date();
 if (argv.s) start = new Date(argv.s);
 else if (argv.start) start = new Date(argv.start);
-else start = new Date();
 
 if (!(start instanceof Date)) {
   log.error('invalid start date');
@@ -53,16 +52,14 @@ fs.readdir(directory, function(err, files) {
     }
   });
 
+  log.debug('parsing log', logFiles.length, 'files');
 
-
-  console.log(logFiles);
-
-
+  
   function getQueryParam(param, src) {
     param = param.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + param + "=([^&#]*)");
     var results = ("undefined" !== typeof src) ? regex.exec(src) : regex.exec(location.search);
-    return (results === null) ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    return (results === null) ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
   var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12};
