@@ -32,8 +32,8 @@
         "content-length": "string"
       }
     },
-    "dev": "",
-    "short": "",
-    "tiny": ""
+    "dev": {},
+    "short": {},
+    "tiny": {}
   }
 }
