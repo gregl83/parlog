@@ -4,8 +4,34 @@
     "modifiers": ""
   },
   "logMatch": {
-    "combined": "",
-    "common": "",
+    "combined": {
+      "format": "^([^ ]+) \\- ([^ ]+) \\[([^\\]]+)\\] \"([A-Z]+) ([^ ]+) HTTP\/([^ ^\"]+)\" ([^ ]+) ([^ ]+) \"([^\"]+)\" \"([^\"]+)\"$",
+      "params": [
+        "remote-addr",
+        "remote-user",
+        "date",
+        "method",
+        "url",
+        "http-version",
+        "status",
+        "content-length",
+        "referrer",
+        "user-agent"
+      ]
+    },
+    "common": {
+      "format": "^([^ ]+) \\- ([^ ]+) \\[([^\\]]+)\\] \"([A-Z]+) ([^ ]+) HTTP\/([^ ^\"]+)\" ([^ ]+) ([^ ]+)$",
+      "params": [
+        "remote-addr",
+        "remote-user",
+        "date",
+        "method",
+        "url",
+        "http-version",
+        "status",
+        "content-length"
+      ]
+    },
     "dev": "",
     "short": "",
     "tiny": ""

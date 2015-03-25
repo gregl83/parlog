@@ -40,13 +40,20 @@ var format = "combined";
 if (argv.f) format = argv.f;
 else if (argv.format) format = argv.format;
 
-if (('undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
+if ((config.local.logMatch && config.local.logMatch && 'undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
   log.error('invalid log match format');
   process.exit();
 }
 
-// get log format expression
-var formatExp = ('undefined' !== typeof config.local.logMatch[format]) ? new RegExp(config.local.logMatch[format]) : new RegExp(config.default.logMatch[format]);
+
+// get log format config
+var formatConfig;
+if (config.local.logMatch && 'undefined' !== typeof config.local.logMatch[format]) {
+  formatConfig = config.local.logMatch[format];
+} else {
+  formatConfig = config.default.logMatch[format];
+}
+var formatExp = new RegExp(formatConfig.format);
 
 
 var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12};
@@ -84,6 +91,16 @@ fs.readdir(directory, function(err, files) {
     });
 
     rl.on('line', function(line) {
+      var logLine = {};
+
+      // build logLine from line parts
+      var lineParts = formatExp.exec(line);
+      formatConfig.params.forEach(function(param, i) {
+        logLine[param] = lineParts[(i+1)];
+      });
+
+      console.log(logLine);
+
       // regex capture match
       //var myString = "something format_abc";
       //var myRegexp = /(?:^|\s)format_(.*?)(?:\s|$)/g;
