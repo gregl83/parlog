@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
+var path = require('path');
 var readline = require('readline');
 
 var argv = require('minimist')(process.argv.slice(2));
@@ -59,9 +60,9 @@ fs.readdir(directory, function(err, files) {
 
 
   var q = async.queue(function (filename, callback) {
-    log.debug('parsing log file', filename);
+    log.debug('parsing', filename);
 
-    var instream = fs.createReadStream(__dirname + '/../log/' + file);
+    var instream = fs.createReadStream(path.resolve(directory, filename));
 
     var rl = readline.createInterface({
       input: instream,
@@ -71,41 +72,41 @@ fs.readdir(directory, function(err, files) {
     rl.on('line', function(line) {
       // fixme temp code for specific use case and testing
 
-      var params = [];
-      var parsedLine = line.split(" ");
+      //var params = [];
+      //var parsedLine = line.split(" ");
+      //
+      //var dayTime = parsedLine[3].substr(1,parsedLine[3].length).split("/");
+      //var yearTime = dayTime[2].split(":");
+      //var offset = parsedLine[4].substr(0, parsedLine[4].length-1);
+      //
+      //var date = new Date(months[dayTime[1]] + "/" + dayTime[0] + "/" + yearTime[0] + " " + yearTime[1] + ":" + yearTime[2] + ":" + yearTime[3] + " " + offset);
+      //
+      //if (start.getDate() != date.getDate() || start.getMonth() != date.getMonth() || start.getFullYear() != date.getFullYear()) return;
+      //
+      //var method = parsedLine[5].substr(1);
+      //
+      //if ("POST" != method) return;
+      //
+      //var url = parsedLine[6];
+      //var referrer = parsedLine[10].substr(1, parsedLine[10].length - 2);
+      //
+      //var rcode = getQueryParam('rcode', url);
+      //var goto = getQueryParam('a', url);
+      //var cid = getQueryParam('utm_cid', url);
+      //var scode = getQueryParam('utm_scode', url);
 
-      var dayTime = parsedLine[3].substr(1,parsedLine[3].length).split("/");
-      var yearTime = dayTime[2].split(":");
-      var offset = parsedLine[4].substr(0, parsedLine[4].length-1);
+      //if (rcode && 4 < rcode.length && scode && 7 < scode.length && cid && 10 < cid.length) {
+      //  log.debug('parsed log message', line, date, url, referrer);
+      //  return ++success;
+      //}
 
-      var date = new Date(months[dayTime[1]] + "/" + dayTime[0] + "/" + yearTime[0] + " " + yearTime[1] + ":" + yearTime[2] + ":" + yearTime[3] + " " + offset);
-
-      if (start.getDate() != date.getDate() || start.getMonth() != date.getMonth() || start.getFullYear() != date.getFullYear()) return;
-
-      var method = parsedLine[5].substr(1);
-
-      if ("POST" != method) return;
-
-      var url = parsedLine[6];
-      var referrer = parsedLine[10].substr(1, parsedLine[10].length - 2);
-
-      var rcode = getQueryParam('rcode', url);
-      var goto = getQueryParam('a', url);
-      var cid = getQueryParam('utm_cid', url);
-      var scode = getQueryParam('utm_scode', url);
-
-      if (rcode && 4 < rcode.length && scode && 7 < scode.length && cid && 10 < cid.length) {
-        log.debug('parsed log message', line, date, url, referrer);
-        return ++success;
-      }
-
-      log.error('trouble parsing params', url, referrer, rcode, goto, cid, scode);
-      ++error;
+      //log.error('trouble parsing params', url, referrer, rcode, goto, cid, scode);
+      //++error;
     });
 
     rl.on('close', function() {
-      log.info('finished analyzing log file');
-      log.info(success + ' success, ' + error + ' error messages for ' + start);
+      log.debug('parsing', filename, 'done');
+      //log.info(success + ' success, ' + error + ' error messages for ' + start);
       callback();
     });
   }, 1);
