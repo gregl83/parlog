@@ -1,0 +1,6 @@
+{
+  "logFileMatch": {
+    "filename": ".*\\.log",
+    "modifiers": ""
+  }
+}

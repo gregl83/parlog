@@ -6,6 +6,9 @@ var readline = require('readline');
 var argv = require('minimist')(process.argv.slice(2));
 var winston = require('winston');
 
+var config = require('../src/config.js');
+var logFileMatch = new RegExp(config.default.logFileMatch.filename, config.default.logFileMatch.modifiers);
+
 var log = new (winston.Logger)({
   transports: [
     new (winston.transports.Console)({
@@ -20,17 +23,40 @@ if (argv.d || argv.debug) {
   log.transports.console.level = 'debug';
 }
 
+// get start date to query log records
 var start;
 if (argv.s) start = new Date(argv.s);
 else if (argv.start) start = new Date(argv.start);
+else start = new Date();
 
 if (!(start instanceof Date)) {
-  throw new Error('invalid start date');
+  log.error('invalid start date');
+  process.exit();
 }
 
 var directory = './log';
 if (argv.d) file = argv.d;
 else if (argv.dir) file = argv.dir;
+
+// get log filenames from log directory
+fs.readdir(directory, function(err, files) {
+  if (err) return log.error('problem reading directory', directory, err);
+
+  var logFiles = [];
+
+  files.forEach(function(filename) {
+    if ('' !== filename.match(logFileMatch)[0]) {
+      logFiles.push(filename);
+    }
+  });
+
+
+
+  console.log(logFiles);
+});
+
+
+// todo - implement code bellow to iterate log filenames and output matches
 
 function getQueryParam(param, src) {
   param = param.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
