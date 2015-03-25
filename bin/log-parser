@@ -33,6 +33,8 @@ if (!(start instanceof Date)) {
   process.exit();
 }
 
+var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12};
+
 var directory = './log';
 if (argv.d) file = argv.d;
 else if (argv.dir) file = argv.dir;
@@ -52,65 +54,54 @@ fs.readdir(directory, function(err, files) {
     }
   });
 
-  log.debug('parsing log', logFiles.length, 'files');
+  log.debug('parsing', logFiles.length, 'log files');
 
-  
-  function getQueryParam(param, src) {
-    param = param.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + param + "=([^&#]*)");
-    var results = ("undefined" !== typeof src) ? regex.exec(src) : regex.exec(location.search);
-    return (results === null) ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
-  }
+  logFiles.every(function(filename) {
+    var instream = fs.createReadStream(__dirname + '/../log/' + file);
 
-  var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12};
-  var success = 0;
-  var error = 0;
+    var rl = readline.createInterface({
+      input: instream,
+      terminal: false
+    });
 
-  var instream = fs.createReadStream(__dirname + '/../log/' + file);
+    rl.on('line', function(line) {
+      // fixme temp code for specific use case and testing
 
-  var rl = readline.createInterface({
-    input: instream,
-    terminal: false
+      var params = [];
+      var parsedLine = line.split(" ");
+
+      var dayTime = parsedLine[3].substr(1,parsedLine[3].length).split("/");
+      var yearTime = dayTime[2].split(":");
+      var offset = parsedLine[4].substr(0, parsedLine[4].length-1);
+
+      var date = new Date(months[dayTime[1]] + "/" + dayTime[0] + "/" + yearTime[0] + " " + yearTime[1] + ":" + yearTime[2] + ":" + yearTime[3] + " " + offset);
+
+      if (start.getDate() != date.getDate() || start.getMonth() != date.getMonth() || start.getFullYear() != date.getFullYear()) return;
+
+      var method = parsedLine[5].substr(1);
+
+      if ("POST" != method) return;
+
+      var url = parsedLine[6];
+      var referrer = parsedLine[10].substr(1, parsedLine[10].length - 2);
+
+      var rcode = getQueryParam('rcode', url);
+      var goto = getQueryParam('a', url);
+      var cid = getQueryParam('utm_cid', url);
+      var scode = getQueryParam('utm_scode', url);
+
+      if (rcode && 4 < rcode.length && scode && 7 < scode.length && cid && 10 < cid.length) {
+        log.debug('parsed log message', line, date, url, referrer);
+        return ++success;
+      }
+
+      log.error('trouble parsing params', url, referrer, rcode, goto, cid, scode);
+      ++error;
+    });
+
+    rl.on('close', function() {
+      log.info('finished analyzing log file');
+      log.info(success + ' success, ' + error + ' error messages for ' + start);
+    });
   });
-
-  rl.on('line', function(line) {
-    // fixme temp code for specific use case and testing
-
-    var params = [];
-    var parsedLine = line.split(" ");
-
-    var dayTime = parsedLine[3].substr(1,parsedLine[3].length).split("/");
-    var yearTime = dayTime[2].split(":");
-    var offset = parsedLine[4].substr(0, parsedLine[4].length-1);
-
-    var date = new Date(months[dayTime[1]] + "/" + dayTime[0] + "/" + yearTime[0] + " " + yearTime[1] + ":" + yearTime[2] + ":" + yearTime[3] + " " + offset);
-
-    if (start.getDate() != date.getDate() || start.getMonth() != date.getMonth() || start.getFullYear() != date.getFullYear()) return;
-
-    var method = parsedLine[5].substr(1);
-
-    if ("POST" != method) return;
-
-    var url = parsedLine[6];
-    var referrer = parsedLine[10].substr(1, parsedLine[10].length - 2);
-
-    var rcode = getQueryParam('rcode', url);
-    var goto = getQueryParam('a', url);
-    var cid = getQueryParam('utm_cid', url);
-    var scode = getQueryParam('utm_scode', url);
-
-    if (rcode && 4 < rcode.length && scode && 7 < scode.length && cid && 10 < cid.length) {
-      log.debug('parsed log message', line, date, url, referrer);
-      return ++success;
-    }
-
-    log.error('trouble parsing params', url, referrer, rcode, goto, cid, scode);
-    ++error;
-  });
-
-  rl.on('close', function() {
-    log.info('finished analyzing log file');
-    log.info(success + ' success, ' + error + ' error messages for ' + start);
-  });
-
 });
