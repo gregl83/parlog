@@ -5,6 +5,7 @@ var readline = require('readline');
 
 var argv = require('minimist')(process.argv.slice(2));
 var winston = require('winston');
+var async = require('async');
 
 var config = require('../src/config.js');
 var logFileMatch = new RegExp(config.default.logFileMatch.filename, config.default.logFileMatch.modifiers);
@@ -58,6 +59,8 @@ fs.readdir(directory, function(err, files) {
 
 
   var q = async.queue(function (filename, callback) {
+    log.debug('parsing log file', filename);
+
     var instream = fs.createReadStream(__dirname + '/../log/' + file);
 
     var rl = readline.createInterface({
