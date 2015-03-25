@@ -105,7 +105,7 @@ fs.readdir(directory, function(err, files) {
       log.info(success + ' success, ' + error + ' error messages for ' + start);
       callback();
     });
-  }, 2);
+  }, 1);
 
   q.drain = function() {
     log.info('done parsing log directory', directory, 'file match', logFileMatch);
