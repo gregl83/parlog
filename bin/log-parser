@@ -3,6 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
+var url = require('url');
 
 var argv = require('minimist')(process.argv.slice(2));
 var winston = require('winston');
@@ -95,8 +96,21 @@ fs.readdir(directory, function(err, files) {
 
       // build logLine from line parts
       var lineParts = formatExp.exec(line);
-      formatConfig.params.forEach(function(param, i) {
-        logLine[param] = lineParts[(i+1)];
+      Object.keys(formatConfig.params).forEach(function(param, i) {
+        switch(param) {
+          case 'date':
+            var slashSplit = lineParts[(i+1)].split('/');
+            var colonSplit = slashSplit[2].split(':');
+            var spaceSplit = colonSplit[3].split(' ');
+            logLine[param] = new Date(months[slashSplit[1]] + "/" + slashSplit[0] + "/" + colonSplit[0] + " " + colonSplit[1] + ":" + colonSplit[2] + ":" + colonSplit[3] + " " + spaceSplit[1]);
+            break;
+          case 'url':
+            logLine[param] = url.parse(lineParts[(i+1)], true);
+            break;
+          default:
+            logLine[param] = lineParts[(i+1)];
+            break;
+        }
       });
 
       console.log(logLine);

@@ -6,31 +6,31 @@
   "logMatch": {
     "combined": {
       "format": "^([^ ]+) \\- ([^ ]+) \\[([^\\]]+)\\] \"([A-Z]+) ([^ ]+) HTTP\/([^ ^\"]+)\" ([^ ]+) ([^ ]+) \"([^\"]+)\" \"([^\"]+)\"$",
-      "params": [
-        "remote-addr",
-        "remote-user",
-        "date",
-        "method",
-        "url",
-        "http-version",
-        "status",
-        "content-length",
-        "referrer",
-        "user-agent"
-      ]
+      "params": {
+        "remote-addr": "string",
+        "remote-user": "string",
+        "date": "date",
+        "method": "string",
+        "url": "url",
+        "http-version": "string",
+        "status": "string",
+        "content-length": "string",
+        "referrer": "url",
+        "user-agent": "string"
+      }
     },
     "common": {
       "format": "^([^ ]+) \\- ([^ ]+) \\[([^\\]]+)\\] \"([A-Z]+) ([^ ]+) HTTP\/([^ ^\"]+)\" ([^ ]+) ([^ ]+)$",
-      "params": [
-        "remote-addr",
-        "remote-user",
-        "date",
-        "method",
-        "url",
-        "http-version",
-        "status",
-        "content-length"
-      ]
+      "params": {
+        "remote-addr": "string",
+        "remote-user": "string",
+        "date": "date",
+        "method": "string",
+        "url": "url",
+        "http-version": "string",
+        "status": "string",
+        "content-length": "string"
+      }
     },
     "dev": "",
     "short": "",
