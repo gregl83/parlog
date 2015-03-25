@@ -56,7 +56,8 @@ fs.readdir(directory, function(err, files) {
 
   log.debug('parsing', logFiles.length, 'log files');
 
-  logFiles.every(function(filename) {
+
+  var q = async.queue(function (filename, callback) {
     var instream = fs.createReadStream(__dirname + '/../log/' + file);
 
     var rl = readline.createInterface({
@@ -102,6 +103,13 @@ fs.readdir(directory, function(err, files) {
     rl.on('close', function() {
       log.info('finished analyzing log file');
       log.info(success + ' success, ' + error + ' error messages for ' + start);
+      callback();
     });
-  });
+  }, 2);
+
+  q.drain = function() {
+    log.info('done parsing log directory', directory, 'file match', logFileMatch);
+  };
+
+  q.push(logFiles);
 });
