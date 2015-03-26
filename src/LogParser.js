@@ -1,8 +1,9 @@
-var util = require("util");
-var events = require("events");
+var util = require('util');
+var events = require('events');
 var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
+var url = require('url');
 var querystring = require('querystring');
 
 var async = require('async');
@@ -11,36 +12,33 @@ var csv = require('csv');
 var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12};
 
 
-var logFileMatch = new RegExp(config.default.logFileMatch.filename, config.default.logFileMatch.modifiers);
-
-if ((config.local.logMatch && config.local.logMatch && 'undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
-  log.error('invalid log match format');
-  process.exit();
-}
-
-// get log format config
-var formatConfig;
-if (config.local.logMatch && 'undefined' !== typeof config.local.logMatch[format]) {
-  formatConfig = config.local.logMatch[format];
-} else {
-  formatConfig = config.default.logMatch[format];
-}
-var formatExp = new RegExp(formatConfig.format);
-
-
-
-function LogParser(config) {
+function LogParser(config, format) {
   var self = this;
 
+  if ((config.local.logMatch && config.local.logMatch && 'undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
+    return self.emit('error', 'invalid log match format');
+  }
+
   self.config = config;
+
+  self.logFileMatch = new RegExp(config.default.logFileMatch.filename, config.default.logFileMatch.modifiers);
+
+  // get log format config
+  var useLocalLogMatch = (config.local.logMatch && 'undefined' !== typeof config.local.logMatch[format]);
+  if (useLocalLogMatch) self.formatConfig = config.local.logMatch[format];
+  else self.formatConfig = config.default.logMatch[format];
+
+  self.formatExp = new RegExp(self.formatConfig.format);
 }
+
 
 util.inherits(LogParser, events.EventEmitter);
 
-LogParser.prototype.parse = function() {
+
+LogParser.prototype.parse = function(directory, start, end) {
   var self = this;
 
-  self.emit('info', 'parsing log directory', directory, 'file match', logFileMatch);
+  self.emit('info', 'parsing log directory', directory, 'file match', self.logFileMatch);
 
 // get log filenames from log directory
   fs.readdir(directory, function(err, files) {
@@ -49,7 +47,7 @@ LogParser.prototype.parse = function() {
     var logFiles = [];
 
     files.forEach(function(filename) {
-      if ('' !== filename.match(logFileMatch)[0]) {
+      if ('' !== filename.match(self.logFileMatch)[0]) {
         self.emit('debug', 'log file match', filename);
         logFiles.push(filename);
       }
@@ -59,6 +57,7 @@ LogParser.prototype.parse = function() {
 
 
 
+    // fixme remove filesystem depend
     var out = fs.createWriteStream('./log-parser.out.csv');
 
     // fixme csv parse option
@@ -78,7 +77,7 @@ LogParser.prototype.parse = function() {
       out.close();
     });
 
-    stringifier.write(Object.keys(formatConfig.params));
+    stringifier.write(Object.keys(self.formatConfig.params));
 
 
 
@@ -96,9 +95,9 @@ LogParser.prototype.parse = function() {
         var logLine = {};
 
         // build logLine from line parts
-        var lineParts = formatExp.exec(line);
-        Object.keys(formatConfig.params).forEach(function(param, i) {
-          switch(formatConfig.params[param]) {
+        var lineParts = self.formatExp.exec(line);
+        Object.keys(self.formatConfig.params).forEach(function(param, i) {
+          switch(self.formatConfig.params[param]) {
             case 'date':
               var slashSplit = lineParts[(i+1)].split('/');
               var colonSplit = slashSplit[2].split(':');
@@ -130,7 +129,6 @@ LogParser.prototype.parse = function() {
           stringifier.write(logLine);
         }
 
-
         // fixme temp code for specific purpose ------
       });
 
@@ -141,10 +139,9 @@ LogParser.prototype.parse = function() {
     }, 1);
 
     q.drain = function() {
-      self.emit('info', 'done parsing log directory', directory, 'file match', logFileMatch);
+      self.emit('info', 'done parsing log directory', directory, 'file match', self.logFileMatch);
     };
 
-    // fixme remove fs depend
     q.push(logFiles);
   });
 };

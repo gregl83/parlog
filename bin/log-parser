@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-var url = require('url');
-
 var argv = require('minimist')(process.argv.slice(2));
 var winston = require('winston');
 
@@ -50,12 +48,12 @@ else if (argv.dir) file = argv.dir;
 
 
 // setup new log parser
-var parser = new LogParser(config);
+var parser = new LogParser(config, format);
 
 parser.on('debug', log.debug);
 parser.on('info', log.info);
-parser.on('warning', log.warning);
+parser.on('warn', log.warn);
 parser.on('error', log.error);
 
 // parse directory
-parser.parse(directory);
+parser.parse(directory, start);
