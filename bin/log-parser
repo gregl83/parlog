@@ -1,19 +1,15 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
-var readline = require('readline');
 var url = require('url');
-var querystring = require('querystring');
 
 var argv = require('minimist')(process.argv.slice(2));
 var winston = require('winston');
-var async = require('async');
-var csv = require('csv');
 
+var LogParser = require('../');
 var config = require('../src/config.js');
-var logFileMatch = new RegExp(config.default.logFileMatch.filename, config.default.logFileMatch.modifiers);
 
+
+// get logger and setup log levels
 var log = new (winston.Logger)({
   transports: [
     new (winston.transports.Console)({
@@ -24,9 +20,11 @@ var log = new (winston.Logger)({
   ]
 });
 
+// check for debug mode flag
 if (argv.d || argv.debug) {
   log.transports.console.level = 'debug';
 }
+
 
 // get start date to query log records
 var start = new Date();
@@ -38,137 +36,26 @@ if (!(start instanceof Date)) {
   process.exit();
 }
 
+
 // get log format
 var format = "combined";
 if (argv.f) format = argv.f;
 else if (argv.format) format = argv.format;
 
-if ((config.local.logMatch && config.local.logMatch && 'undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
-  log.error('invalid log match format');
-  process.exit();
-}
 
-
-// get log format config
-var formatConfig;
-if (config.local.logMatch && 'undefined' !== typeof config.local.logMatch[format]) {
-  formatConfig = config.local.logMatch[format];
-} else {
-  formatConfig = config.default.logMatch[format];
-}
-var formatExp = new RegExp(formatConfig.format);
-
-
-var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12};
-
+// get log directory
 var directory = './log';
 if (argv.d) file = argv.d;
 else if (argv.dir) file = argv.dir;
 
-log.info('parsing log directory', directory, 'file match', logFileMatch);
 
-// get log filenames from log directory
-fs.readdir(directory, function(err, files) {
-  if (err) return log.error('problem reading directory', directory, err);
+// setup new log parser
+var parser = new LogParser(config);
 
-  var logFiles = [];
+parser.on('debug', log.debug);
+parser.on('info', log.info);
+parser.on('warning', log.warning);
+parser.on('error', log.error);
 
-  files.forEach(function(filename) {
-    if ('' !== filename.match(logFileMatch)[0]) {
-      log.debug('log file match', filename);
-      logFiles.push(filename);
-    }
-  });
-
-  log.debug('parsing', logFiles.length, 'log files');
-
-
-
-  var out = fs.createWriteStream('./log-parser.out.csv');
-
-  // fixme csv parse option
-  var stringifier = csv.stringify({});
-
-  stringifier.on('readable', function() {
-    while(row = stringifier.read()) {
-      out.write(row);
-    }
-  });
-
-  stringifier.on('error', function(err) {
-    log.error('converting to csv', err);
-  });
-
-  stringifier.on('finish', function() {
-    out.close();
-  });
-
-  stringifier.write(Object.keys(formatConfig.params));
-
-
-
-  var q = async.queue(function (filename, callback) {
-    log.debug('parsing log file', filename);
-
-    var instream = fs.createReadStream(path.resolve(directory, filename));
-
-    var rl = readline.createInterface({
-      input: instream,
-      terminal: false
-    });
-
-    rl.on('line', function(line) {
-      var logLine = {};
-
-      // build logLine from line parts
-      var lineParts = formatExp.exec(line);
-      Object.keys(formatConfig.params).forEach(function(param, i) {
-        switch(formatConfig.params[param]) {
-          case 'date':
-            var slashSplit = lineParts[(i+1)].split('/');
-            var colonSplit = slashSplit[2].split(':');
-            var spaceSplit = colonSplit[3].split(' ');
-            logLine[param] = new Date(months[slashSplit[1]] + "/" + slashSplit[0] + "/" + colonSplit[0] + " " + colonSplit[1] + ":" + colonSplit[2] + ":" + colonSplit[3] + " " + spaceSplit[1]);
-            break;
-          case 'url':
-            logLine[param] = url.parse(lineParts[(i+1)], true);
-            logLine[param].toString = function(){return lineParts[(i+1)]};
-            break;
-          default:
-            logLine[param] = lineParts[(i+1)];
-            break;
-        }
-      });
-
-      // fixme temp code for specific purpose ------
-
-      if (start.getDate() != logLine['date'].getDate() || start.getMonth() != logLine['date'].getMonth() || start.getFullYear() != logLine['date'].getFullYear()) return;
-
-      logLine['date'] = logLine['date'].toISOString();
-      logLine['url'] = logLine['url'].toString();
-      logLine['referrer'] = logLine['referrer'].toString();
-
-
-      var qs = querystring.parse(logLine['url']);
-
-      if ('undefined' === typeof qs.u && 'undefined' === typeof qs.q) {
-        stringifier.write(logLine);
-      }
-
-
-      // fixme temp code for specific purpose ------
-    });
-
-    rl.on('close', function() {
-      log.debug('done parsing log file', filename);
-      callback();
-    });
-  }, 1);
-
-  q.drain = function() {
-    log.info('done parsing log directory', directory, 'file match', logFileMatch);
-  };
-
-  // fixme remove fs depend
-  q.push(logFiles);
-});
+// parse directory
+parser.parse(directory);
