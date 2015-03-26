@@ -36,10 +36,16 @@ if (command.debug) {
 }
 
 
-// get start date to query log records
+// get start and end date to query log records
 var start = (command.start) ? new Date(command.start) : new Date();
 if (!(start instanceof Date)) {
   log.error('invalid start date');
+  process.exit();
+}
+
+var end = (command.end) ? new Date(command.end) : new Date();
+if (!(end instanceof Date)) {
+  log.error('invalid end date');
   process.exit();
 }
 
