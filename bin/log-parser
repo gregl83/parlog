@@ -1,10 +1,22 @@
 #!/usr/bin/env node
 
-var argv = require('minimist')(process.argv.slice(2));
+var command = require('commander');
 var winston = require('winston');
 
+var version = require('../package.json').version;
 var LogParser = require('../');
 var config = require('../src/config.js');
+
+
+// setup commander options and menu
+command
+  .version(version)
+  .option('-d, --debug', 'debug mode')
+  .option('-s, --start [MM/DD/YYYY]', 'start date for log match')
+  .option('-e, --end [MM/DD/YYYY]', 'end date for log match')
+  .option('-f, --format [format]', 'format of logs', 'combined')
+  .option('-d, --directory [path]', 'directory of log files', './log')
+  .parse(process.argv);
 
 
 // get logger and setup log levels
@@ -19,36 +31,21 @@ var log = new (winston.Logger)({
 });
 
 // check for debug mode flag
-if (argv.d || argv.debug) {
+if (command.debug) {
   log.transports.console.level = 'debug';
 }
 
 
 // get start date to query log records
-var start = new Date();
-if (argv.s) start = new Date(argv.s);
-else if (argv.start) start = new Date(argv.start);
-
+var start = (command.start) ? new Date(command.start) : new Date();
 if (!(start instanceof Date)) {
   log.error('invalid start date');
   process.exit();
 }
 
 
-// get log format
-var format = "combined";
-if (argv.f) format = argv.f;
-else if (argv.format) format = argv.format;
-
-
-// get log directory
-var directory = './log';
-if (argv.d) file = argv.d;
-else if (argv.dir) file = argv.dir;
-
-
 // setup new log parser
-var parser = new LogParser(config, format);
+var parser = new LogParser(config, command.format);
 
 parser.on('debug', log.debug);
 parser.on('info', log.info);
@@ -56,4 +53,4 @@ parser.on('warn', log.warn);
 parser.on('error', log.error);
 
 // parse directory
-parser.parse(directory, start);
+parser.parse(command.directory, start);
