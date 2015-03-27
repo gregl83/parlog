@@ -37,7 +37,7 @@ util.inherits(LogParser, events.EventEmitter);
 
 
 LogParser.inDateRange = function(date, start, end) {
-  return (start <= date && end >= date);
+  return ((null !== start && date >= start) && (null !== end && date <= end));
 };
 
 LogParser.prototype.getLogFiles = function(directory, cb) {
@@ -123,8 +123,8 @@ LogParser.prototype.parse = function(directory, start, end, output) {
 
         // todo allow specific actions to be performed on logLine
         logLine['date'] = logLine['date'].toISOString();
-        logLine['url'] = logLine['url'].toString();
-        logLine['referrer'] = logLine['referrer'].toString();
+        //logLine['url'] = logLine['url'].toString();
+        //logLine['referrer'] = logLine['referrer'].toString();
 
         // todo parse specific parts of log
         var qs = querystring.parse(logLine['url']);
