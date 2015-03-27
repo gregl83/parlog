@@ -91,11 +91,6 @@ LogParser.prototype.parse = function(directory, start, end, output) {
 
         if (!LogParser.inDateRange(logLine.data['date'], start, end)) return;
 
-        // todo allow specific actions to be performed on logLine
-        //logLine.data['date'] = logLine.data['date'].toString();
-        //logLine.data['url'] = logLine.data['url'].toString();
-        //logLine.data['referrer'] = logLine.data['referrer'].toString();
-
         // todo parse specific parts of log
         var qs = querystring.parse(logLine.data['url']);
 
