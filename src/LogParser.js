@@ -36,6 +36,10 @@ function LogParser(config, format) {
 util.inherits(LogParser, events.EventEmitter);
 
 
+LogParser.inDateRange = function(date, start, end) {
+  return (start <= date && end >= date);
+};
+
 LogParser.prototype.getLogFiles = function(directory, cb) {
   var self = this;
 
@@ -115,8 +119,7 @@ LogParser.prototype.parse = function(directory, start, end, output) {
 
         // fixme temp code for specific purpose ------
 
-        // todo start and end date matching
-        if (start.getDate() != logLine['date'].getDate() || start.getMonth() != logLine['date'].getMonth() || start.getFullYear() != logLine['date'].getFullYear()) return;
+        if (!LogParser.inDateRange(logLine['date'], start, end)) return;
 
         // todo allow specific actions to be performed on logLine
         logLine['date'] = logLine['date'].toISOString();
