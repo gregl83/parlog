@@ -7,7 +7,8 @@ var url = require('url');
 var querystring = require('querystring');
 
 var async = require('async');
-var csv = require('csv');
+
+var Out = require('./Out');
 
 var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12};
 
@@ -87,7 +88,7 @@ LogParser.prototype.parseLogLine = function(line) {
 };
 
 
-LogParser.prototype.parse = function(directory, start, end) {
+LogParser.prototype.parse = function(directory, start, end, output) {
   var self = this;
 
   self.emit('info', 'parsing log directory', directory, 'file match', self.logFileMatch);
@@ -95,29 +96,9 @@ LogParser.prototype.parse = function(directory, start, end) {
   self.getLogFiles(directory, function(err, logFiles) {
     self.emit('debug', 'parsing', logFiles.length, 'log files');
 
-    // fixme remove filesystem depend
-    var out = fs.createWriteStream('./log-parser.out.csv');
-
-    // fixme csv parse option
-    var stringifier = csv.stringify({});
-
-    stringifier.on('readable', function() {
-      while(row = stringifier.read()) {
-        out.write(row);
-      }
-    });
-
-    stringifier.on('error', function(err) {
-      log.error('converting to csv', err);
-    });
-
-    stringifier.on('finish', function() {
-      out.close();
-    });
-
-    stringifier.write(Object.keys(self.formatConfig.params));
-
-
+    // todo cleanup
+    var out = new Out(output);
+    out.write(Object.keys(self.formatConfig.params));
 
     var q = async.queue(function (filename, callback) {
       self.emit('debug', 'parsing log file', filename);
@@ -134,17 +115,20 @@ LogParser.prototype.parse = function(directory, start, end) {
 
         // fixme temp code for specific purpose ------
 
+        // todo start and end date matching
         if (start.getDate() != logLine['date'].getDate() || start.getMonth() != logLine['date'].getMonth() || start.getFullYear() != logLine['date'].getFullYear()) return;
 
+        // todo allow specific actions to be performed on logLine
         logLine['date'] = logLine['date'].toISOString();
         logLine['url'] = logLine['url'].toString();
         logLine['referrer'] = logLine['referrer'].toString();
 
-
+        // todo parse specific parts of log
         var qs = querystring.parse(logLine['url']);
 
+        // todo match clicks only
         if ('undefined' === typeof qs.u && 'undefined' === typeof qs.q) {
-          stringifier.write(logLine);
+          out.write(logLine);
         }
 
         // fixme temp code for specific purpose ------
