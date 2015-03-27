@@ -8,7 +8,7 @@ var querystring = require('querystring');
 var async = require('async');
 
 var LogLine = require('./LogLine');
-var Out = require('./Out');
+var StreamOut = require('./StreamOut');
 
 
 function LogParser(config, format) {
@@ -71,7 +71,7 @@ LogParser.prototype.parse = function(directory, start, end, output) {
     self.emit('debug', 'parsing', logFiles.length, 'log files');
 
     // todo cleanup
-    var out = new Out(output);
+    var out = new StreamOut(output);
     out.write(Object.keys(self.formatConfig.params));
 
     var q = async.queue(function (filename, callback) {

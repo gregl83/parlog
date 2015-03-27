@@ -4,7 +4,7 @@ var fs = require('fs');
 
 var csv = require('csv');
 
-function Out(out) {
+function StreamOut(out) {
   var self = this;
 
   stream.Writable.call(self, {objectMode: true});
@@ -29,12 +29,12 @@ function Out(out) {
 }
 
 
-util.inherits(Out, stream.Writable);
+util.inherits(StreamOut, stream.Writable);
 
 
-Out.prototype._write = function(chunk, enc, next) {
+StreamOut.prototype._write = function(chunk, enc, next) {
   this.parser.write(chunk);
   next();
 };
 
-module.exports = Out;
+module.exports = StreamOut;
