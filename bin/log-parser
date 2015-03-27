@@ -14,6 +14,7 @@ command
   .option('-d, --debug', 'debug mode')
   .option('-s, --start [MM/DD/YYYY]', 'start date for log match')
   .option('-e, --end [MM/DD/YYYY]', 'end date for log match')
+  .option('-q, --query [regex]', 'query regular expression match')
   .option('-f, --format [format]', 'format of logs', 'combined')
   .option('-d, --directory [path]', 'directory of log files', './log')
   .option('-o, --output [filepath]', 'filepath of output', './log-parser.out.csv')
@@ -60,4 +61,4 @@ parser.on('warn', log.warn);
 parser.on('error', log.error);
 
 // parse directory
-parser.parse(command.directory, start, end, command.output);
+parser.parse(command.directory, start, end, command.output, command.query);
