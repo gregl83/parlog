@@ -35,7 +35,7 @@ function LogParser(config, format) {
 util.inherits(LogParser, events.EventEmitter);
 
 
-LogParser.prototype.getLogFiles = function(directoy, cb) {
+LogParser.prototype.getLogFiles = function(directory, cb) {
   // get log filenames from log directory
   fs.readdir(directory, function(err, files) {
     if (err) {
