@@ -3,16 +3,15 @@ var events = require('events');
 var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
-var querystring = require('querystring');
 
 var async = require('async');
 
 var LogLine = require('./LogLine');
-//var LogTransform = require('./LogTransform');
+var LogTransform = require('./LogTransform');
 var LogOut = require('./LogOut');
 
 
-function LogParser(config, format) {
+function LogParser(config, format, transform) {
   var self = this;
 
   if ((config.local.logMatch && config.local.logMatch && 'undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
@@ -29,6 +28,9 @@ function LogParser(config, format) {
   else self.formatConfig = config.default.logMatch[format];
 
   self.formatExp = new RegExp(self.formatConfig.format);
+
+  // setup log transform method
+  self.logTransform = (transform) ? new LogTransform(transform) : null;
 }
 
 
@@ -72,7 +74,6 @@ LogParser.prototype.parse = function(directory, start, end, output) {
   self.getLogFiles(directory, function(err, logFiles) {
     self.emit('debug', 'parsing', logFiles.length, 'log files');
 
-    // todo cleanup
     var logOut = new LogOut(output);
     logOut.write(Object.keys(self.formatConfig.params));
 
@@ -89,19 +90,16 @@ LogParser.prototype.parse = function(directory, start, end, output) {
       rl.on('line', function(line) {
         var logLine = new LogLine(self.formatExp, self.formatConfig.params, line);
 
-        // fixme temp code for specific purpose ------
-
         if (!LogParser.inDateRange(logLine.data['date'], start, end)) return;
 
-        // todo parse specific parts of log
-        var qs = querystring.parse(logLine.data['url']);
+        if (null !== self.logTransform)  self.logTransform.write(logLine).pipe(logOut);
+        else logOut.write(logLine.propertiesToString());
 
-        // todo match clicks only
-        if ('undefined' === typeof qs.u && 'undefined' === typeof qs.q) {
-          logOut.write(logLine.propertiesToString());
-        }
-
-        // fixme temp code for specific purpose ------
+        // todo move logic below into transform function
+        //var qs = querystring.parse(logLine.data['url']);
+        //if ('undefined' === typeof qs.u && 'undefined' === typeof qs.q) {
+        //  logOut.write(logLine.propertiesToString());
+        //}
       });
 
       rl.on('close', function() {
