@@ -4,10 +4,11 @@ var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"S
 
 function LogLine(expression, params, line) {
   var self = this;
+  self.line = line;
   self.data = {};
 
   // build logLine from line parts
-  var lineParts = expression.exec(line);
+  var lineParts = expression.exec(self.line);
   Object.keys(params).forEach(function(param, i) {
     switch(params[param]) {
       case 'date':
