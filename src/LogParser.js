@@ -3,14 +3,12 @@ var events = require('events');
 var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
-var url = require('url');
 var querystring = require('querystring');
 
 var async = require('async');
 
+var LogLine = require('./LogLine');
 var Out = require('./Out');
-
-var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12};
 
 
 function LogParser(config, format) {
@@ -64,34 +62,6 @@ LogParser.prototype.getLogFiles = function(directory, cb) {
 };
 
 
-LogParser.prototype.parseLogLine = function(line) {
-  var self = this;
-  var logLine = {};
-
-  // build logLine from line parts
-  var lineParts = self.formatExp.exec(line);
-  Object.keys(self.formatConfig.params).forEach(function(param, i) {
-    switch(self.formatConfig.params[param]) {
-      case 'date':
-        var slashSplit = lineParts[(i+1)].split('/');
-        var colonSplit = slashSplit[2].split(':');
-        var spaceSplit = colonSplit[3].split(' ');
-        logLine[param] = new Date(months[slashSplit[1]] + "/" + slashSplit[0] + "/" + colonSplit[0] + " " + colonSplit[1] + ":" + colonSplit[2] + ":" + colonSplit[3] + " " + spaceSplit[1]);
-        break;
-      case 'url':
-        logLine[param] = url.parse(lineParts[(i+1)], true);
-        logLine[param].toString = function(){return lineParts[(i+1)]};
-        break;
-      default:
-        logLine[param] = lineParts[(i+1)];
-        break;
-    }
-  });
-
-  return logLine;
-};
-
-
 LogParser.prototype.parse = function(directory, start, end, output) {
   var self = this;
 
@@ -115,16 +85,16 @@ LogParser.prototype.parse = function(directory, start, end, output) {
       });
 
       rl.on('line', function(line) {
-        var logLine = self.parseLogLine(line);
+        var logLine = new LogLine(self.formatExp, self.formatConfig.params, line);
 
         // fixme temp code for specific purpose ------
 
         if (!LogParser.inDateRange(logLine['date'], start, end)) return;
 
         // todo allow specific actions to be performed on logLine
-        logLine['date'] = logLine['date'].toISOString();
-        //logLine['url'] = logLine['url'].toString();
-        //logLine['referrer'] = logLine['referrer'].toString();
+        logLine['date'] = logLine['date'].toString();
+        logLine['url'] = logLine['url'].toString();
+        logLine['referrer'] = logLine['referrer'].toString();
 
         // todo parse specific parts of log
         var qs = querystring.parse(logLine['url']);
