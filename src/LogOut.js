@@ -4,12 +4,12 @@ var fs = require('fs');
 
 var csv = require('csv');
 
-function StreamOut(out) {
+function LogOut(output) {
   var self = this;
 
   stream.Writable.call(self, {objectMode: true});
 
-  var file = fs.createWriteStream(out);
+  var file = fs.createWriteStream(output);
 
   self.parser = csv.stringify({});
 
@@ -29,12 +29,12 @@ function StreamOut(out) {
 }
 
 
-util.inherits(StreamOut, stream.Writable);
+util.inherits(LogOut, stream.Writable);
 
 
-StreamOut.prototype._write = function(chunk, enc, next) {
+LogOut.prototype._write = function(chunk, enc, next) {
   this.parser.write(chunk);
   next();
 };
 
-module.exports = StreamOut;
+module.exports = LogOut;

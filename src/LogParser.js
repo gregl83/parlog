@@ -8,7 +8,8 @@ var querystring = require('querystring');
 var async = require('async');
 
 var LogLine = require('./LogLine');
-var StreamOut = require('./StreamOut');
+//var LogTransform = require('./LogTransform');
+var LogOut = require('./LogOut');
 
 
 function LogParser(config, format) {
@@ -37,6 +38,7 @@ util.inherits(LogParser, events.EventEmitter);
 LogParser.inDateRange = function(date, start, end) {
   return ((null !== start && date >= start) && (null !== end && date <= end));
 };
+
 
 LogParser.prototype.getLogFiles = function(directory, cb) {
   var self = this;
@@ -71,8 +73,8 @@ LogParser.prototype.parse = function(directory, start, end, output) {
     self.emit('debug', 'parsing', logFiles.length, 'log files');
 
     // todo cleanup
-    var out = new StreamOut(output);
-    out.write(Object.keys(self.formatConfig.params));
+    var logOut = new LogOut(output);
+    logOut.write(Object.keys(self.formatConfig.params));
 
     var q = async.queue(function (filename, callback) {
       self.emit('debug', 'parsing log file', filename);
@@ -96,7 +98,7 @@ LogParser.prototype.parse = function(directory, start, end, output) {
 
         // todo match clicks only
         if ('undefined' === typeof qs.u && 'undefined' === typeof qs.q) {
-          out.write(logLine.propertiesToString());
+          logOut.write(logLine.propertiesToString());
         }
 
         // fixme temp code for specific purpose ------
