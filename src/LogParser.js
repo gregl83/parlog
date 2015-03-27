@@ -35,27 +35,35 @@ function LogParser(config, format) {
 util.inherits(LogParser, events.EventEmitter);
 
 
-LogParser.prototype.parse = function(directory, start, end) {
-  var self = this;
-
-  self.emit('info', 'parsing log directory', directory, 'file match', self.logFileMatch);
-
-// get log filenames from log directory
+LogParser.prototype.getLogFiles = function(directoy, cb) {
+  // get log filenames from log directory
   fs.readdir(directory, function(err, files) {
-    if (err) return self.emit('error', 'problem reading directory', directory, err);
+    if (err) {
+      self.emit('error', 'problem reading directory', directory, err);
+      return cb(err);
+    }
 
     var logFiles = [];
 
-    files.forEach(function(filename) {
+    files.forEach(function (filename) {
       if ('' !== filename.match(self.logFileMatch)[0]) {
         self.emit('debug', 'log file match', filename);
         logFiles.push(filename);
       }
     });
 
+    cb(null, logFiles);
+  });
+};
+
+
+LogParser.prototype.parse = function(directory, start, end) {
+  var self = this;
+
+  self.emit('info', 'parsing log directory', directory, 'file match', self.logFileMatch);
+
+  self.getLogFiles(directory, function(err, logFiles) {
     self.emit('debug', 'parsing', logFiles.length, 'log files');
-
-
 
     // fixme remove filesystem depend
     var out = fs.createWriteStream('./log-parser.out.csv');
