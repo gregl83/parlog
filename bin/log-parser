@@ -16,7 +16,7 @@ command
   .option('-e, --end [MM/DD/YYYY]', 'end date for log match')
   .option('-f, --format [format]', 'format of logs', 'combined')
   .option('-d, --directory [path]', 'directory of log files', './log')
-  .option('-o, --output [filepath]', 'filepath results output', './log-parser.out.csv')
+  .option('-o, --output [filepath]', 'filepath of output', './log-parser.out.csv')
   .parse(process.argv);
 
 
