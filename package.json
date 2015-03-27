@@ -25,7 +25,7 @@
   "devDependencies": {
   },
   "dependencies": {
-    "minimist": "1.1.x",
+    "commander": "2.7.x",
     "winston": "0.9.x",
     "async": "0.9.x",
     "csv": "0.4.x"
