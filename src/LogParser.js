@@ -89,19 +89,19 @@ LogParser.prototype.parse = function(directory, start, end, output) {
 
         // fixme temp code for specific purpose ------
 
-        if (!LogParser.inDateRange(logLine['date'], start, end)) return;
+        if (!LogParser.inDateRange(logLine.data['date'], start, end)) return;
 
         // todo allow specific actions to be performed on logLine
-        logLine['date'] = logLine['date'].toString();
-        logLine['url'] = logLine['url'].toString();
-        logLine['referrer'] = logLine['referrer'].toString();
+        //logLine.data['date'] = logLine.data['date'].toString();
+        //logLine.data['url'] = logLine.data['url'].toString();
+        //logLine.data['referrer'] = logLine.data['referrer'].toString();
 
         // todo parse specific parts of log
-        var qs = querystring.parse(logLine['url']);
+        var qs = querystring.parse(logLine.data['url']);
 
         // todo match clicks only
         if ('undefined' === typeof qs.u && 'undefined' === typeof qs.q) {
-          out.write(logLine);
+          out.write(logLine.propertiesToString());
         }
 
         // fixme temp code for specific purpose ------
