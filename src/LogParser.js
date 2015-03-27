@@ -59,6 +59,34 @@ LogParser.prototype.getLogFiles = function(directory, cb) {
 };
 
 
+LogParser.prototype.parseLogLine = function(line) {
+  var self = this;
+  var logLine = {};
+
+  // build logLine from line parts
+  var lineParts = self.formatExp.exec(line);
+  Object.keys(self.formatConfig.params).forEach(function(param, i) {
+    switch(self.formatConfig.params[param]) {
+      case 'date':
+        var slashSplit = lineParts[(i+1)].split('/');
+        var colonSplit = slashSplit[2].split(':');
+        var spaceSplit = colonSplit[3].split(' ');
+        logLine[param] = new Date(months[slashSplit[1]] + "/" + slashSplit[0] + "/" + colonSplit[0] + " " + colonSplit[1] + ":" + colonSplit[2] + ":" + colonSplit[3] + " " + spaceSplit[1]);
+        break;
+      case 'url':
+        logLine[param] = url.parse(lineParts[(i+1)], true);
+        logLine[param].toString = function(){return lineParts[(i+1)]};
+        break;
+      default:
+        logLine[param] = lineParts[(i+1)];
+        break;
+    }
+  });
+
+  return logLine;
+};
+
+
 LogParser.prototype.parse = function(directory, start, end) {
   var self = this;
 
@@ -102,27 +130,7 @@ LogParser.prototype.parse = function(directory, start, end) {
       });
 
       rl.on('line', function(line) {
-        var logLine = {};
-
-        // build logLine from line parts
-        var lineParts = self.formatExp.exec(line);
-        Object.keys(self.formatConfig.params).forEach(function(param, i) {
-          switch(self.formatConfig.params[param]) {
-            case 'date':
-              var slashSplit = lineParts[(i+1)].split('/');
-              var colonSplit = slashSplit[2].split(':');
-              var spaceSplit = colonSplit[3].split(' ');
-              logLine[param] = new Date(months[slashSplit[1]] + "/" + slashSplit[0] + "/" + colonSplit[0] + " " + colonSplit[1] + ":" + colonSplit[2] + ":" + colonSplit[3] + " " + spaceSplit[1]);
-              break;
-            case 'url':
-              logLine[param] = url.parse(lineParts[(i+1)], true);
-              logLine[param].toString = function(){return lineParts[(i+1)]};
-              break;
-            default:
-              logLine[param] = lineParts[(i+1)];
-              break;
-          }
-        });
+        var logLine = self.parseLogLine(line);
 
         // fixme temp code for specific purpose ------
 
