@@ -22,6 +22,7 @@ util.inherits(LogTransform, stream.Transform);
 
 
 LogTransform.inDateRange = function(date, start, end) {
+  if (null === start && null === end) return true;
   return ((null !== start && date >= start) && (null !== end && date <= end));
 };
 
@@ -39,6 +40,8 @@ LogTransform.prototype._transform = function(chunk, encoding, done) {
     var logLine = new LogLine(self._formatExp, self._formatParams, line);
 
     if (!LogTransform.inDateRange(logLine.data['date'], self._start, self._end)) return;
+
+    // todo implement query
 
     if ('function' === typeof self._transformFunction) self._transformFunction(logLine);
 
