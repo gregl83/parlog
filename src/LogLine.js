@@ -6,6 +6,7 @@ var months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"S
 function LogLine(expression, params, line) {
   var self = this;
   self.line = line;
+  self.logOut = true;
   self.data = {};
 
   // build logLine from line parts

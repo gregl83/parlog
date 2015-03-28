@@ -4,7 +4,7 @@ var stream = require('stream');
 var LogLine = require('./LogLine');
 
 
-function LogTransform(start, end, formatExp, formatParams) {
+function LogTransform(start, end, formatExp, formatParams, transform) {
   var self = this;
 
   stream.Transform.call(self, {objectMode: true});
@@ -13,6 +13,7 @@ function LogTransform(start, end, formatExp, formatParams) {
   self._end = end;
   self._formatExp = formatExp;
   self._formatParams = formatParams;
+  self._transformFunction = transform;
   self._lastLineData = '';
 }
 
@@ -39,7 +40,9 @@ LogTransform.prototype._transform = function(chunk, encoding, done) {
 
     if (!LogTransform.inDateRange(logLine.data['date'], self._start, self._end)) return;
 
-    self.push(logLine.propertiesToString());
+    if ('function' === typeof self._transformFunction) self._transformFunction(logLine);
+
+    if (logLine.logOut) self.push(logLine.propertiesToString());
   });
 
   done()

@@ -27,8 +27,14 @@ function LogParser(config, format, transform) {
 
   self.formatExp = new RegExp(self.formatConfig.format);
 
-  // setup log transform method
-  self.logTransform = (transform) ? new LogTransform(transform) : null;
+  self.transform = null;
+  if (transform) {
+    try {
+      self.transform = require(transform);
+    } catch (e) {
+      self.emit('error', 'transform function not found', e);
+    }
+  }
 }
 
 
@@ -75,7 +81,7 @@ LogParser.prototype.parse = function(directory, start, end, output) {
 
       var logFile = fs.createReadStream(path.resolve(directory, filename));
 
-      var logTransform = new LogTransform(start, end, self.formatExp, self.formatConfig.params);
+      var logTransform = new LogTransform(start, end, self.formatExp, self.formatConfig.params, self.transform);
 
       logFile.pipe(logTransform);
 
