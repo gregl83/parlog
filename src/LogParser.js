@@ -2,11 +2,9 @@ var util = require('util');
 var events = require('events');
 var fs = require('fs');
 var path = require('path');
-var readline = require('readline');
 
 var async = require('async');
 
-var LogLine = require('./LogLine');
 var LogTransform = require('./LogTransform');
 var LogOut = require('./LogOut');
 
@@ -35,11 +33,6 @@ function LogParser(config, format, transform) {
 
 
 util.inherits(LogParser, events.EventEmitter);
-
-
-LogParser.inDateRange = function(date, start, end) {
-  return ((null !== start && date >= start) && (null !== end && date <= end));
-};
 
 
 LogParser.prototype.getLogFiles = function(directory, cb) {
@@ -80,29 +73,24 @@ LogParser.prototype.parse = function(directory, start, end, output) {
     var q = async.queue(function (filename, callback) {
       self.emit('debug', 'parsing log file', filename);
 
-      var instream = fs.createReadStream(path.resolve(directory, filename));
+      var logFile = fs.createReadStream(path.resolve(directory, filename));
 
-      var rl = readline.createInterface({
-        input: instream,
-        terminal: false
+      var logTransform = new LogTransform(start, end, self.formatExp, self.formatConfig.params);
+
+      logFile.pipe(logTransform);
+
+      logTransform.on('readable', function () {
+        var line;
+        while (line = logTransform.read()) {
+          logOut.write(line);
+        }
       });
 
-      rl.on('line', function(line) {
-        var logLine = new LogLine(self.formatExp, self.formatConfig.params, line);
-
-        if (!LogParser.inDateRange(logLine.data['date'], start, end)) return;
-
-        if (null !== self.logTransform)  self.logTransform.write(logLine).pipe(logOut);
-        else logOut.write(logLine.propertiesToString());
-
-        // todo move logic below into transform function
-        //var qs = querystring.parse(logLine.data['url']);
-        //if ('undefined' === typeof qs.u && 'undefined' === typeof qs.q) {
-        //  logOut.write(logLine.propertiesToString());
-        //}
+      logTransform.on('error', function(err) {
+        self.emit('parsing log file', err);
       });
 
-      rl.on('close', function() {
+      logTransform.on('finish', function() {
         self.emit('debug', 'done parsing log file', filename);
         callback();
       });

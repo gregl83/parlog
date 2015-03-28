@@ -4,6 +4,7 @@ var fs = require('fs');
 
 var csv = require('csv');
 
+
 function LogOut(output) {
   var self = this;
 
