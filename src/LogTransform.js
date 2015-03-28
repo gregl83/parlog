@@ -24,7 +24,9 @@ util.inherits(LogTransform, stream.Transform);
 
 LogTransform.inDateRange = function(date, start, end) {
   if (null === start && null === end) return true;
-  return ((null !== start && date >= start) && (null !== end && date <= end));
+  else if ((null !== start && date >= start) && null === end) return true;
+  else if (null === start && (null !== end && date <= end)) return true;
+  return (date >= start && date <= end);
 };
 
 

@@ -9,12 +9,17 @@ var LogTransform = require('./LogTransform');
 var LogOut = require('./LogOut');
 
 
-// fixme log emits wont work within this constructor
-function LogParser(config, format, transform) {
+function LogParser() {}
+
+
+util.inherits(LogParser, events.EventEmitter);
+
+
+LogParser.prototype.init = function(config, format, transform) {
   var self = this;
 
   if ((config.local.logMatch && config.local.logMatch && 'undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
-    throw new Error('invalid log match format');
+    self.emit('error', 'invalid log match format');
   }
 
   self.config = config;
@@ -33,13 +38,10 @@ function LogParser(config, format, transform) {
     try {
       self.transform = require(transform);
     } catch (e) {
-      throw new Error('transform function not found');
+      self.emit('error', 'transform function not found');
     }
   }
-}
-
-
-util.inherits(LogParser, events.EventEmitter);
+};
 
 
 LogParser.prototype.getLogFiles = function(directory, cb) {

@@ -38,26 +38,28 @@ if (command.debug) log.transports.console.level = 'debug';
 
 
 // get start and end date to query log records
-var start = (command.start) ? Date.parse(command.start) : null;
+var start = (command.start) ? new Date(command.start) : null;
 if ((null !== start) && isNaN(start)) {
   log.error('invalid start date');
   process.exit();
 }
 
-var end = (command.end) ? Date.parse(command.end) : null;
+var end = (command.end) ? new Date(command.end) : null;
 if ((null !== end) && isNaN(end)) {
   log.error('invalid end date');
   process.exit();
 }
 
-
 // get new log parser
-var parser = new LogParser(config, command.format, command.transform);
+var parser = new LogParser();
 
 parser.on('debug', log.debug);
 parser.on('info', log.info);
 parser.on('warn', log.warn);
 parser.on('error', log.error);
+
+// setup log parser
+parser.init(config, command.format, command.transform);
 
 // parse directory
 parser.parse(command.directory, start, end, command.query, command.output);
