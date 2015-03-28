@@ -14,7 +14,7 @@ function LogParser(config, format, transform) {
   var self = this;
 
   if ((config.local.logMatch && config.local.logMatch && 'undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
-    return self.emit('error', 'invalid log match format');
+    throw new Error('invalid log match format');
   }
 
   self.config = config;
@@ -33,7 +33,7 @@ function LogParser(config, format, transform) {
     try {
       self.transform = require(transform);
     } catch (e) {
-      self.emit('error', 'transform function not found', e);
+      throw new Error('transform function not found');
     }
   }
 }

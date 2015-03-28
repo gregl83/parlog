@@ -34,26 +34,24 @@ var log = new (winston.Logger)({
 });
 
 // check for debug mode flag
-if (command.debug) {
-  log.transports.console.level = 'debug';
-}
+if (command.debug) log.transports.console.level = 'debug';
 
 
 // get start and end date to query log records
-var start = (command.start) ? new Date(command.start) : null;
-if ((null !== start) && !(start instanceof Date)) {
+var start = (command.start) ? Date.parse(command.start) : null;
+if ((null !== start) && isNaN(start)) {
   log.error('invalid start date');
   process.exit();
 }
 
-var end = (command.end) ? new Date(command.end) : null;
-if ((null !== end) && !(end instanceof Date)) {
+var end = (command.end) ? Date.parse(command.end) : null;
+if ((null !== end) && isNaN(end)) {
   log.error('invalid end date');
   process.exit();
 }
 
 
-// setup new log parser
+// get new log parser
 var parser = new LogParser(config, command.format, command.transform);
 
 parser.on('debug', log.debug);
