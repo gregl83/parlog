@@ -9,6 +9,7 @@ var LogTransform = require('./LogTransform');
 var LogOut = require('./LogOut');
 
 
+// fixme log emits wont work within this constructor
 function LogParser(config, format, transform) {
   var self = this;
 
@@ -65,7 +66,7 @@ LogParser.prototype.getLogFiles = function(directory, cb) {
 };
 
 
-LogParser.prototype.parse = function(directory, start, end, output) {
+LogParser.prototype.parse = function(directory, start, end, query, output) {
   var self = this;
 
   self.emit('info', 'parsing log directory', directory, 'file match', self.logFileMatch);
@@ -81,7 +82,7 @@ LogParser.prototype.parse = function(directory, start, end, output) {
 
       var logFile = fs.createReadStream(path.resolve(directory, filename));
 
-      var logTransform = new LogTransform(start, end, self.formatExp, self.formatConfig.params, self.transform);
+      var logTransform = new LogTransform(start, end, query, self.formatExp, self.formatConfig.params, self.transform);
 
       logFile.pipe(logTransform);
 

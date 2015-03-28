@@ -4,13 +4,14 @@ var stream = require('stream');
 var LogLine = require('./LogLine');
 
 
-function LogTransform(start, end, formatExp, formatParams, transform) {
+function LogTransform(start, end, query, formatExp, formatParams, transform) {
   var self = this;
 
   stream.Transform.call(self, {objectMode: true});
 
   self._start = start;
   self._end = end;
+  self._query = query;
   self._formatExp = formatExp;
   self._formatParams = formatParams;
   self._transformFunction = transform;
@@ -41,7 +42,10 @@ LogTransform.prototype._transform = function(chunk, encoding, done) {
 
     if (!LogTransform.inDateRange(logLine.data['date'], self._start, self._end)) return;
 
-    // todo implement query
+    if (self._query) {
+      var query = new RegExp(self._query);
+      if (!query.test(logLine.line)) return;
+    }
 
     if ('function' === typeof self._transformFunction) self._transformFunction(logLine);
 

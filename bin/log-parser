@@ -62,4 +62,4 @@ parser.on('warn', log.warn);
 parser.on('error', log.error);
 
 // parse directory
-parser.parse(command.directory, start, end, command.output, command.query);
+parser.parse(command.directory, start, end, command.query, command.output);
