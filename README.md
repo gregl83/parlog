@@ -1,7 +1,7 @@
 # log-parser
 Log Parser for ExpressJS/Morgan Middleware
 
-A tool for querying and parsing Morgan log file directories and outputing the results in CSV.
+A tool for querying and parsing Morgan log file directories and outputing the results in CSV format.
 
 ## Installation
 
@@ -34,6 +34,20 @@ $ ./bin/log-parser --help
     -o, --output [filepath]     filepath of output
 ```
 
+Additional details of *some options* provide below:
+
+### -s, --start | -e, --end
+
+Inclusive date range of logs to query.
+
+### -q, --query
+
+Query in regular expression (regex) format that matches rows to be parsed.
+
+This option must be a regex string using **single quotes** in order to avoid any character issues.
+
+A JavaScript RegExp object is created from this option and tested against each log line. Log lines without a match are returned in results.
+
 ### -f, --format
 
 The format of the log file(s) to parse. The default is set to the *combined* log format.
@@ -41,6 +55,24 @@ The format of the log file(s) to parse. The default is set to the *combined* log
 The following are the log-parser supported formats. Documentation copied directly from the [expressjs/morgan](https://github.com/expressjs/morgan) README.
 
 There are various pre-defined formats provided:
+
+### -d, --directory
+
+Directory of log files. Log files are found using a regular expression match on filename. The regular expression is located in the config.default.json file.
+
+Note: The filename regular expression can be overridden by creating a config.local.json file.
+
+### -t, --transform
+
+File path of an exported transform function. This function is called during the transform process with a log line object argument that is passed by reference.
+
+The transform function can be used to make changes to parsed log lines prior to outputting them.
+
+### -o, --output
+
+File path to write all parsing output.
+
+Currently only CSV format is supported for output files.
 
 #### combined
 
