@@ -125,7 +125,7 @@ An object that is accessible within the transform function. It is passed by refe
 Important properties:
 
 ```js
-logLine.data // contains the log line params
+logLine.data // contains the log line params that are in output results
 ```
 
 ```js
