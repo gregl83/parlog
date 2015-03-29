@@ -3,6 +3,13 @@ Log Parser for ExpressJS/Morgan Middleware
 
 A tool for querying and parsing Morgan log file directories and outputting results in CSV format.
 
+## Requirements
+
+- NodeJS
+- NPM
+
+See `./package.json`
+
 ## Installation
 
     $ npm install log-parser
@@ -149,6 +156,50 @@ $ cp ./config.default.json ./config.local.json
 ```
 
 Make configuration changes to the `./config.local.json` file. 
+
+## Examples
+
+A few examples of running log-parser.
+
+### Default
+
+This will parse all log files in the default directory `./log`.
+
+```
+$ ./bin/log-parser
+```
+
+### Start Date
+
+This will parse all logs that took place at or after 04/11/1970 at 0000.
+
+```
+$ ./bin/log-parser --start "04/11/1970"
+```
+
+### Date Range
+
+This will parse all logs that took place at or between 04/11/1970 at 0000 to 04/12/1970 0000.
+
+```
+$ ./bin/log-parser --start "04/11/1970" --end "04/12/1970"
+```
+
+### Query with Date Range
+
+This will parse all logs that took place at or between 04/11/1970 at 0000 to 04/12/1970 0000 and contain the word *houston* and *problem*.
+
+```
+$ ./bin/log-parser --start "04/11/1970" --end "04/12/1970" --query '^(?=.*houston)(?=.*problem).*$'
+```
+
+### Debug Mode
+
+This will run parser in debug mode which outputs more runtime details.
+
+```
+$ ./bin/log-parser --debug
+```
 
 ## License
 
