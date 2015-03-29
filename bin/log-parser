@@ -3,14 +3,15 @@
 var command = require('commander');
 var winston = require('winston');
 
-var version = require('../package.json').version;
+var packageJSON = require('../package.json');
 var LogParser = require('../');
 var config = require('../src/config.js');
 
 
 // setup commander options and menu
 command
-  .version(version)
+  .version(packageJSON.version)
+  .description(packageJSON.description)
   .option('-d, --debug', 'debug mode')
   .option('-s, --start [MM/DD/YYYY]', 'start date for log match')
   .option('-e, --end [MM/DD/YYYY]', 'end date for log match')
