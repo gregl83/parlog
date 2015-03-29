@@ -1,7 +1,7 @@
 # log-parser
 Log Parser for ExpressJS/Morgan Middleware
 
-A tool for querying and parsing Morgan log file directories and outputing the results in CSV format.
+A tool for querying and parsing Morgan log file directories and outputting results in CSV format.
 
 ## Installation
 
@@ -137,6 +137,18 @@ logLine.logOut // boolean that if false does NOT include log line to output resu
 File path to write all parsing output.
 
 Currently only CSV format is supported for output files.
+
+## Configuration
+
+A default configuration is provided with log-parser: `./config.default.json`.
+
+Config params can be overwritten using a local config file. To create the local config:
+
+```
+$ cp ./config.default.json ./config.local.json
+```
+
+Make configuration changes to the `./config.local.json` file. 
 
 ## License
 
