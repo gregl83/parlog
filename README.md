@@ -185,12 +185,12 @@ This will parse all logs that took place at or between 04/11/1970 at 0000 to 04/
 $ ./bin/log-parser --start "04/11/1970" --end "04/12/1970"
 ```
 
-### Query with Date Range
+### Query with Start Date
 
-This will parse all logs that took place at or between 04/11/1970 at 0000 to 04/12/1970 0000 and contain the word *houston* and *problem*.
+This will parse all logs that took place at or after 04/11/1970 at 0000 and contain the word *houston* and *problem*.
 
 ```
-$ ./bin/log-parser --start "04/11/1970" --end "04/12/1970" --query '^(?=.*houston)(?=.*problem).*$'
+$ ./bin/log-parser --start "04/11/1970" --query '^(?=.*houston)(?=.*problem).*$'
 ```
 
 ### Debug Mode
