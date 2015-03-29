@@ -110,8 +110,34 @@ File path of an exported transform function. This function is called during the 
 
 The transform function can be used to make changes to parsed log lines prior to outputting them.
 
+Example of the expected transform file format can be found in the `./src/transform.js` file.
+
+```js
+module.exports = function(logLine) {
+  // todo put logLine.data transformation code here
+};
+```
+
+#### logLine
+
+An object that is accessible within the transform function. It is passed by reference.
+
+Important properties:
+
+```js
+logLine.data // contains the log line params
+```
+
+```js
+logLine.logOut // boolean that if false does NOT include log line to output results
+```
+
 ### -o, --output
 
 File path to write all parsing output.
 
 Currently only CSV format is supported for output files.
+
+## License
+
+MIT
