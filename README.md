@@ -56,24 +56,6 @@ The following are the log-parser supported formats. Documentation copied directl
 
 There are various pre-defined formats provided:
 
-### -d, --directory
-
-Directory of log files. Log files are found using a regular expression match on filename. The regular expression is located in the config.default.json file.
-
-Note: The filename regular expression can be overridden by creating a config.local.json file.
-
-### -t, --transform
-
-File path of an exported transform function. This function is called during the transform process with a log line object argument that is passed by reference.
-
-The transform function can be used to make changes to parsed log lines prior to outputting them.
-
-### -o, --output
-
-File path to write all parsing output.
-
-Currently only CSV format is supported for output files.
-
 #### combined
 
 Standard Apache combined log output.
@@ -115,3 +97,21 @@ The minimal output.
 ```
 :method :url :status :res[content-length] - :response-time ms
 ```
+
+### -d, --directory
+
+Directory of log files. Log files are found using a regular expression match on filename. The regular expression is located in the config.default.json file.
+
+Note: The filename regular expression can be overridden by creating a config.local.json file.
+
+### -t, --transform
+
+File path of an exported transform function. This function is called during the transform process with a log line object argument that is passed by reference.
+
+The transform function can be used to make changes to parsed log lines prior to outputting them.
+
+### -o, --output
+
+File path to write all parsing output.
+
+Currently only CSV format is supported for output files.
