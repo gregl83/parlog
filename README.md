@@ -9,7 +9,7 @@ A tool for querying and parsing Morgan log file directories and outputing the re
 
 ## Usage
 
-    $ ./bin/log-parser
+    $ ./bin/log-parser [options]
 
 ## Options
 
