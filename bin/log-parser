@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 var command = require('commander');
+var config = require('config');
 var winston = require('winston');
 
 var packageJSON = require('../package.json');
 var LogParser = require('../');
-var config = require('../src/config.js');
 
 
 // setup commander options and menu

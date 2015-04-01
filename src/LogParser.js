@@ -18,20 +18,13 @@ util.inherits(LogParser, events.EventEmitter);
 LogParser.prototype.init = function(config, format, transform) {
   var self = this;
 
-  if ((config.local.logMatch && config.local.logMatch && 'undefined' === typeof config.local.logMatch[format]) && ('undefined' === typeof config.default.logMatch[format])) {
-    self.emit('error', 'invalid log match format');
-  }
-
   self.config = config;
 
-  self.logFileMatch = new RegExp(config.default.logFileMatch.filename, config.default.logFileMatch.modifiers);
+  if (!self.config.has('logMatch.' + format)) self.emit('error', 'invalid log match format');
 
-  // get log format config
-  var useLocalLogMatch = (config.local.logMatch && 'undefined' !== typeof config.local.logMatch[format]);
-  if (useLocalLogMatch) self.formatConfig = config.local.logMatch[format];
-  else self.formatConfig = config.default.logMatch[format];
-
+  self.formatConfig = self.config.get('logMatch.' + format);
   self.formatExp = new RegExp(self.formatConfig.format);
+  self.logFileMatch = new RegExp(self.config.get('logFileMatch.filename'), self.config.get('logFileMatch.modifiers'));
 
   self.transform = null;
   if (transform) {
