@@ -21,3 +21,6 @@ log/*
 
 # Application Output
 *.out.*
+
+# Application Local Configuration
+local.json
