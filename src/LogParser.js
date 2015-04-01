@@ -66,6 +66,8 @@ LogParser.prototype.parse = function(directory, start, end, query, output) {
 
   self.emit('info', 'parsing log directory', directory, 'file match', self.logFileMatch);
 
+  directory = path.resolve(__dirname, '..', directory);
+
   self.getLogFiles(directory, function(err, logFiles) {
     self.emit('debug', 'parsing', logFiles.length, 'log files');
 

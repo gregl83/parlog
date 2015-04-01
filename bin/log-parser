@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 
+/**
+ * Config Directory
+ */
+
+process.env.NODE_CONFIG_DIR = __dirname + '/../config';
+
+
 var command = require('commander');
 var config = require('config');
 var winston = require('winston');
