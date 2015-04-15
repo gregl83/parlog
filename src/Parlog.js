@@ -9,13 +9,13 @@ var LogTransform = require('./LogTransform');
 var LogOut = require('./LogOut');
 
 
-function LogParser() {}
+function Parlog() {}
 
 
-util.inherits(LogParser, events.EventEmitter);
+util.inherits(Parlog, events.EventEmitter);
 
 
-LogParser.prototype.init = function(config, format, transform) {
+Parlog.prototype.init = function(config, format, transform) {
   var self = this;
 
   self.config = config;
@@ -37,7 +37,7 @@ LogParser.prototype.init = function(config, format, transform) {
 };
 
 
-LogParser.prototype.getLogFiles = function(directory, cb) {
+Parlog.prototype.getLogFiles = function(directory, cb) {
   var self = this;
 
   // get log filenames from log directory
@@ -61,7 +61,7 @@ LogParser.prototype.getLogFiles = function(directory, cb) {
 };
 
 
-LogParser.prototype.parse = function(directory, start, end, query, output) {
+Parlog.prototype.parse = function(directory, start, end, query, output) {
   var self = this;
 
   self.emit('info', 'parsing log directory', directory, 'file match', self.logFileMatch);
@@ -108,4 +108,4 @@ LogParser.prototype.parse = function(directory, start, end, query, output) {
   });
 };
 
-module.exports = LogParser;
+module.exports = Parlog;

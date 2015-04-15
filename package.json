@@ -1,27 +1,28 @@
 {
-  "name": "log-parser",
+  "name": "parlog",
   "version": "0.1.0",
   "description": "Log Parser for ExpressJS/Morgan Middleware",
   "author": "Gregory Langlais",
   "private": false,
   "keywords": [
+    "parlog",
     "log",
     "parser",
     "expressjs",
     "express",
     "morgan"
   ],
-  "main": "src/LogParser",
+  "main": "src/Parlog",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gregl83/log-parser.git"
+    "url": "https://github.com/gregl83/parlog.git"
   },
   "bugs": {
-    "url": "https://github.com/gregl83/log-parser/issues"
+    "url": "https://github.com/gregl83/parlog/issues"
   },
-  "homepage": "https://github.com/gregl83/log-parser",
+  "homepage": "https://github.com/gregl83/parlog",
   "scripts": {
-    "start": "./bin/log-parser",
+    "start": "./bin/parlog",
     "test": "mocha --require test/support/env --reporter spec --bail --check-leaks test/"
   },
   "devDependencies": {

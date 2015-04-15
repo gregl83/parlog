@@ -1,4 +1,4 @@
-# log-parser
+# parlog
 Log Parser for ExpressJS/Morgan Middleware
 
 A tool for querying and parsing Morgan log file directories and outputting results in CSV format.
@@ -17,18 +17,18 @@ See `./package.json`
 
 ## Installation
 
-    $ npm install log-parser
+    $ npm install parlog
 
 ## Usage
 
-    $ ./bin/log-parser [options]
+    $ ./bin/parlog [options]
 
 ## Options
 
 ```
-$ ./bin/log-parser --help
+$ ./bin/parlog --help
 
-  Usage: log-parser [options]
+  Usage: parlog [options]
 
   Log Parser for ExpressJS/Morgan Middleware
 
@@ -64,7 +64,7 @@ A JavaScript RegExp object is created from this option and tested against each l
 
 The format of the log file(s) to parse. The default is set to the *combined* log format.
 
-The following are the log-parser supported formats. Documentation copied directly from the [expressjs/morgan](https://github.com/expressjs/morgan) README.
+The following are the parlog supported formats. Documentation copied directly from the [expressjs/morgan](https://github.com/expressjs/morgan) README.
 
 There are various pre-defined formats provided:
 
@@ -152,7 +152,7 @@ Currently only CSV format is supported for output files.
 
 ## Configuration
 
-A default configuration is provided with log-parser: `./config.default.json`.
+A default configuration is provided with parlog: `./config.default.json`.
 
 Config params can be overwritten using a local config file. To create the local config:
 
@@ -164,14 +164,14 @@ Make configuration changes to the `./config.local.json` file.
 
 ## Examples
 
-A few examples of running log-parser.
+A few examples of running parlog.
 
 ### Default
 
 This will parse all log files in the default directory `./log`.
 
 ```
-$ ./bin/log-parser
+$ ./bin/parlog
 ```
 
 ### Start Date
@@ -179,7 +179,7 @@ $ ./bin/log-parser
 This will parse all logs that took place at or after 04/11/1970 at 0000.
 
 ```
-$ ./bin/log-parser --start "04/11/1970"
+$ ./bin/parlog --start "04/11/1970"
 ```
 
 ### Date Range
@@ -187,7 +187,7 @@ $ ./bin/log-parser --start "04/11/1970"
 This will parse all logs that took place at or between 04/11/1970 at 0000 to 04/12/1970 0000.
 
 ```
-$ ./bin/log-parser --start "04/11/1970" --end "04/12/1970"
+$ ./bin/parlog --start "04/11/1970" --end "04/12/1970"
 ```
 
 ### Query with Start Date
@@ -195,7 +195,7 @@ $ ./bin/log-parser --start "04/11/1970" --end "04/12/1970"
 This will parse all logs that took place at or after 04/11/1970 at 0000 and contain the word *houston* and *problem*.
 
 ```
-$ ./bin/log-parser --start "04/11/1970" --query '^(?=.*houston)(?=.*problem).*$'
+$ ./bin/parlog --start "04/11/1970" --query '^(?=.*houston)(?=.*problem).*$'
 ```
 
 ### Debug Mode
@@ -203,7 +203,7 @@ $ ./bin/log-parser --start "04/11/1970" --query '^(?=.*houston)(?=.*problem).*$'
 This will run parser in debug mode which outputs more runtime details.
 
 ```
-$ ./bin/log-parser --debug
+$ ./bin/parlog --debug
 ```
 
 ## License

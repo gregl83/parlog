@@ -12,7 +12,7 @@ var config = require('config');
 var winston = require('winston');
 
 var packageJSON = require('../package.json');
-var LogParser = require('../');
+var Parlog = require('../');
 
 
 // setup commander options and menu
@@ -26,7 +26,7 @@ command
   .option('-f, --format [format]', 'format of logs', 'combined')
   .option('-d, --directory [path]', 'directory of log files', './log')
   .option('-t, --transform [filepath]', 'filepath of transform function')
-  .option('-o, --output [filepath]', 'filepath of output', './log-parser.out.csv')
+  .option('-o, --output [filepath]', 'filepath of output', './parlog.out.csv')
   .parse(process.argv);
 
 
@@ -59,7 +59,7 @@ if ((null !== end) && isNaN(end)) {
 }
 
 // get new log parser
-var parser = new LogParser();
+var parser = new Parlog();
 
 parser.on('debug', log.debug);
 parser.on('info', log.info);
