@@ -3,8 +3,9 @@ Log Parser for ExpressJS/Morgan Middleware
 
 A tool for querying and parsing Morgan log file directories and outputting results in CSV format.
 
-**CAUTION**
-This package does NOT have automated tests. While the package has served it's intended purpose it should be considered
+**CAUTION:**
+
+This package does NOT have automated tests. While the package has served its intended purpose it should be considered
 an Alpha product until testing has been added. Hopefully tests will be added shortly.
 
 ## Requirements
