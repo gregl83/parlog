@@ -46,7 +46,7 @@ $ ./bin/parlog --help
     -o, --output [filepath]     filepath of output
 ```
 
-Additional details of *some options* provide below:
+Additional details of *some options* provided below:
 
 ### -s, --start | -e, --end
 
