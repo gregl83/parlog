@@ -23,6 +23,8 @@ See `./package.json`
 
     $ ./bin/parlog [options]
 
+This will output a CSV file of the parsed log file(s) to the working directory.
+
 ## Options
 
 ```
