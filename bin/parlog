@@ -24,7 +24,7 @@ command
   .option('-e, --end [MM/DD/YYYY]', 'end date for log match')
   .option('-q, --query [regex]', 'query regular expression match')
   .option('-f, --format [format]', 'format of logs', 'combined')
-  .option('-d, --directory [path]', 'directory of log files', './log')
+  .option('-i, --directory [path]', 'directory of log files', './log')
   .option('-t, --transform [filepath]', 'filepath of transform function')
   .option('-o, --output [filepath]', 'filepath of output', './parlog.out.csv')
   .parse(process.argv);

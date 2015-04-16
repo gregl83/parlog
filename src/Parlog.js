@@ -50,7 +50,7 @@ Parlog.prototype.getLogFiles = function(directory, cb) {
     var logFiles = [];
 
     files.forEach(function (filename) {
-      if ('' !== filename.match(self.logFileMatch)[0]) {
+      if (null !== filename.match(self.logFileMatch)) {
         self.emit('debug', 'log file match', filename);
         logFiles.push(filename);
       }
@@ -69,6 +69,8 @@ Parlog.prototype.parse = function(directory, start, end, query, output) {
   directory = path.resolve(__dirname, '..', directory);
 
   self.getLogFiles(directory, function(err, logFiles) {
+    if (err) return false;
+
     self.emit('debug', 'parsing', logFiles.length, 'log files');
 
     var logOut = new LogOut(output);

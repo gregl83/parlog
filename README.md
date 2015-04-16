@@ -41,7 +41,7 @@ $ ./bin/parlog --help
     -e, --end [MM/DD/YYYY]      end date for log match
     -q, --query [regex]         query regular expression match
     -f, --format [format]       format of logs
-    -d, --directory [path]      directory of log files
+    -i, --directory [path]      directory of log files
     -t, --transform [filepath]  filepath of transform function
     -o, --output [filepath]     filepath of output
 ```
