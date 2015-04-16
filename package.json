@@ -1,6 +1,6 @@
 {
   "name": "parlog",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Log Parser for ExpressJS/Morgan Middleware",
   "author": "Gregory Langlais",
   "private": false,
