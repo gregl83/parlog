@@ -176,6 +176,14 @@ This will parse all log files in the default directory `./log`.
 $ ./bin/parlog
 ```
 
+### Custom Directory
+
+This will parse all log files in the user defined directory `/home/ubuntu/log`.
+
+```
+$ ./bin/parlog --directory /home/ubuntu/log
+```
+
 ### Start Date
 
 This will parse all logs that took place at or after 04/11/1970 at 0000.
