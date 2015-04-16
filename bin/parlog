@@ -6,6 +6,7 @@
 
 process.env.NODE_CONFIG_DIR = __dirname + '/../config';
 
+var path = require('path');
 
 var command = require('commander');
 var config = require('config');
@@ -16,6 +17,11 @@ var Parlog = require('../');
 
 
 // setup commander options and menu
+
+function directory(dpath) {
+  return path.resolve(process.cwd(), dpath);
+}
+
 command
   .version(packageJSON.version)
   .description(packageJSON.description)
@@ -24,7 +30,7 @@ command
   .option('-e, --end [MM/DD/YYYY]', 'end date for log match')
   .option('-q, --query [regex]', 'query regular expression match')
   .option('-f, --format [format]', 'format of logs', 'combined')
-  .option('-i, --directory [path]', 'directory of log files', './log')
+  .option('-i, --directory [path]', 'directory of log files', directory, './log')
   .option('-t, --transform [filepath]', 'filepath of transform function')
   .option('-o, --output [filepath]', 'filepath of output', './parlog.out.csv')
   .parse(process.argv);
