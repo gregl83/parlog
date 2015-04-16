@@ -176,7 +176,7 @@ This will parse all log files in the default directory `./log`.
 $ ./bin/parlog
 ```
 
-### Custom Directory
+### Directory
 
 This will parse all log files in the user defined directory `/home/ubuntu/log`.
 
