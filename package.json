@@ -1,6 +1,6 @@
 {
   "name": "parlog",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Log Parser for ExpressJS/Morgan Middleware",
   "author": "Gregory Langlais",
   "private": false,
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/gregl83/parlog",
   "scripts": {
+    "install": "mkdir ./log",
     "start": "./bin/parlog",
     "test": "mocha --require test/support/env --reporter spec --bail --check-leaks test/"
   },
